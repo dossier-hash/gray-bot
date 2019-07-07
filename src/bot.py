@@ -1,35 +1,44 @@
 import discord
+from discord.ext import commands
+import json
 import random
 
-client = discord.Client()
-
-answers = [
-	'Hey there!',
-	'OwO Hewwo, theya!',
-	'Hi',
-	'Hello!',
-	'Sup',
-	'Bonjour',
-	"What's up?"
-]
+client = commands.Bot(command_prefix='%')
+token = 'token'
 
 @client.event
 async def on_ready():
-	print(f"Logged in as {client.user}")
+	print("Bot is ready")
 
-@client.event
-async def on_message(message):
-	if message.author == client.user:
-		return
+@client.command(aliases=['pong'])
+async def ping(ctx):
+	await ctx.send(f'Pong! {round(client.latency * 1000)}ms')
 
-	if message.content.startswith('$hello'):
-		await message.channel.send(answers[random.randint(0, 6)])
+@client.command(aliases=['8ball'])
+async def eBall(ctx, *, question):
+	responses = [
+		"It is certain", 
+		"It is decidedly so", 
+		"Without a doubt",
+	    "Yes, definitely", 
+	    "You may rely on it", 
+	    "As I see it, yes",
+	    "Most likely", 
+	    "Outlook good", 
+	    "Signs point to yes", 
+	    "Yes",
+	    "Reply hazy, try again", 
+	    "Ask again later",
+	    "Better not tell you now", 
+	    "Cannot predict now",
+	    "Concentrate and ask again", 
+	    "Don't bet on it",
+	    "My reply is no", 
+	    "My sources say no", 
+	    "Outlook not so good",
+	    "Very doubtful"
+	]	
+	await ctx.send(f"Q: {question}\nA: {random.choice(responses)}")
 
-@client.event
-async def on_member_join(member):
-	for channel in member.server.channels:
-		if str(channel) == 'welcome':
-			await client.send_message(f"Welcome to the server {member.mention}!" + 
-				" Talk in #general")
 
-client.run('token')
+client.run(token)
